@@ -199,7 +199,7 @@ func (g *Game) RevealCell(startX, startY int) error {
 
 	if g.board[startX][startY].kind == CellMine {
 		g.board[startX][startY].revealed = true
-		g.onRevealedBomb()
+		g.onRevealedMine()
 		return nil
 	}
 
@@ -289,7 +289,7 @@ func (g *Game) calculateNeighborCounters() {
 	}
 }
 
-func (g *Game) onRevealedBomb() {
+func (g *Game) onRevealedMine() {
 	g.state = StatePlayerLoses
 
 	for i := range g.size {
