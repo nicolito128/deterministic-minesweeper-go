@@ -208,12 +208,14 @@ func (g *Game) RevealCell(startX, startY int) error {
 
 	if g.board[startX][startY].kind == CellCount {
 		g.board[startX][startY].revealed = true
+		g.revealedCells++
 		return nil
 	}
 
 	queue := make([]Coor, 0)
 
 	g.board[startX][startY].revealed = true
+	g.revealedCells++
 	queue = append(queue, Coor{x: startX, y: startY})
 
 	for len(queue) > 0 {
@@ -230,6 +232,7 @@ func (g *Game) RevealCell(startX, startY int) error {
 
 				if g.inBounds(nx, ny) && !g.board[nx][ny].revealed && !g.board[nx][ny].flagged {
 					g.board[nx][ny].revealed = true
+					g.revealedCells++
 
 					if g.board[nx][ny].kind == CellEmpty {
 						queue = append(queue, Coor{x: nx, y: ny})
@@ -238,6 +241,8 @@ func (g *Game) RevealCell(startX, startY int) error {
 			}
 		}
 	}
+
+	g.onWinCase()
 
 	return nil
 }
@@ -298,6 +303,18 @@ func (g *Game) onRevealedMine() {
 	for i := range g.size {
 		for j := range g.size {
 			g.board[i][j].revealed = true
+			g.revealedCells++
+		}
+	}
+}
+
+func (g *Game) onWinCase() {
+	if g.revealedCells == (g.size*g.size - g.totalMines) {
+		g.state = StatePlayerWins
+		for i := range g.size {
+			for j := range g.size {
+				g.board[i][j].revealed = true
+			}
 		}
 	}
 }
