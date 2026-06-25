@@ -5,7 +5,7 @@ type CellKind uint8
 const (
 	CellEmpty CellKind = iota
 	CellCount
-	CellBomb
+	CellMine
 )
 
 type Cell struct {
@@ -15,10 +15,10 @@ type Cell struct {
 	flagged  bool
 }
 
-func NewCell(bomb bool) Cell {
+func NewCell(mine bool) Cell {
 	c := Cell{}
-	if bomb {
-		c.kind = CellBomb
+	if mine {
+		c.kind = CellMine
 	}
 	return c
 }

@@ -120,7 +120,7 @@ func (g *Game) String() string {
 				switch c.kind {
 				case CellEmpty:
 					out.WriteByte(' ')
-				case CellBomb:
+				case CellMine:
 					out.WriteByte('x')
 				case CellCount:
 					fmt.Fprintf(&out, "%d", c.value)
@@ -179,7 +179,7 @@ func (g *Game) ToggleFlag(x, y int) error {
 	if !g.inBounds(x, y) {
 		return ErrOutOfBounds
 	}
-	if g.board[x][y].revealed {
+	if g.board[y][x].revealed {
 		return ErrInvalidAction
 	}
 
@@ -191,43 +191,42 @@ func (g *Game) RevealCell(startX, startY int) error {
 	if !g.inBounds(startX, startY) {
 		return ErrOutOfBounds
 	}
-	if g.board[startY][startX].revealed || g.board[startY][startX].flagged {
+	if g.board[startX][startY].revealed || g.board[startY][startX].flagged {
 		return ErrInvalidAction
 	}
 
-	if g.board[startY][startX].kind == CellBomb {
-		g.board[startY][startX].revealed = true
+	if g.board[startX][startY].kind == CellMine {
+		g.board[startX][startY].revealed = true
 		g.onRevealedBomb()
 		return nil
 	}
 
-	if g.board[startY][startX].kind == CellCount {
-		g.board[startY][startX].revealed = true
+	if g.board[startX][startY].kind == CellCount {
+		g.board[startX][startY].revealed = true
 		return nil
 	}
 
 	queue := make([]Coor, 0)
 
-	g.board[startY][startX].revealed = true
+	g.board[startX][startY].revealed = true
 	queue = append(queue, Coor{x: startX, y: startY})
 
 	for len(queue) > 0 {
 		curr := queue[0]
 		queue = queue[1:]
 
-		for dy := -1; dy <= 1; dy++ {
-			for dx := -1; dx <= 1; dx++ {
+		for dx := -1; dx <= 1; dx++ {
+			for dy := -1; dy <= 1; dy++ {
 				if dx == 0 && dy == 0 {
 					continue
 				}
 
 				nx, ny := curr.x+dx, curr.y+dy
 
-				if g.inBounds(nx, ny) && !g.board[ny][nx].revealed && !g.board[ny][nx].flagged {
+				if g.inBounds(nx, ny) && !g.board[nx][ny].revealed && !g.board[nx][ny].flagged {
+					g.board[nx][ny].revealed = true
 
-					g.board[ny][nx].revealed = true
-
-					if g.board[ny][nx].kind == CellEmpty {
+					if g.board[nx][ny].kind == CellEmpty {
 						queue = append(queue, Coor{x: nx, y: ny})
 					}
 				}
@@ -249,11 +248,11 @@ func (g *Game) generateInitialBoard(initX, initY int, totaltotalMines int) {
 			continue
 		}
 
-		if g.board[y][x].kind == CellBomb {
+		if g.board[y][x].kind == CellMine {
 			continue
 		}
 
-		g.board[y][x].kind = CellBomb
+		g.board[y][x].kind = CellMine
 		totalMinesPlaced++
 	}
 
@@ -263,7 +262,7 @@ func (g *Game) generateInitialBoard(initX, initY int, totaltotalMines int) {
 func (g *Game) calculateNeighborCounters() {
 	for i := range g.size {
 		for j := range g.size {
-			if g.board[i][j].kind == CellBomb {
+			if g.board[i][j].kind == CellMine {
 				continue
 			}
 
@@ -273,7 +272,7 @@ func (g *Game) calculateNeighborCounters() {
 					ni, nj := i+di, j+dj
 
 					if g.inBounds(ni, nj) {
-						if g.board[ni][nj].kind == CellBomb {
+						if g.board[ni][nj].kind == CellMine {
 							bombCount++
 						}
 					}
