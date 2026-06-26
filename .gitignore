@@ -1,0 +1,8 @@
+# Build
+bin/*
+!bin/*.md
+
+# Specifics
+.vscode
+.idea
+.DS_Store
