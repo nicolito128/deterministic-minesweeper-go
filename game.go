@@ -58,8 +58,14 @@ func NewGameSeeded(seed uint64, width, height, minesTotal int) (*Game, error) {
 	if width <= 0 || height <= 0 {
 		return nil, ErrInvalidSize
 	}
+	if width < 3 || height < 3 {
+		return nil, ErrInvalidBoard
+	}
 	if minesTotal <= 0 {
 		return nil, ErrInvalidTotalMines
+	}
+	if minesTotal >= (width * height / 2) {
+		return nil, ErrInvalidBoard
 	}
 	g := new(Game)
 	g.width = width
@@ -78,6 +84,14 @@ func NewGameSeeded(seed uint64, width, height, minesTotal int) (*Game, error) {
 	}
 
 	return g, nil
+}
+
+func (g *Game) Width() int {
+	return g.width
+}
+
+func (g *Game) Height() int {
+	return g.height
 }
 
 func (g *Game) Status() GameStatus {
@@ -268,7 +282,13 @@ func (g *Game) onWinCase() {
 	if g.revealedCells == (g.width*g.height - g.minesTotal) {
 		g.status = StatusWon
 		for x, y := range g.cells() {
-			g.board[x][y].flagged = true
+			if g.board[x][y].kind == CellMine {
+				g.board[x][y].flagged = true
+				g.board[x][y].revealed = false
+			} else {
+				g.board[x][y].revealed = true
+				g.board[x][y].flagged = false
+			}
 		}
 	}
 }
