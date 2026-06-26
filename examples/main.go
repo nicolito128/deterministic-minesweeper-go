@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	minesweeper "github.com/nicolito128/deterministic-minesweeper-go"
+	minesweeper "github.com/nicolito128/minesweeper-go"
 )
 
 var (

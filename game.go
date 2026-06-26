@@ -4,7 +4,7 @@ import (
 	"iter"
 	"math/rand"
 
-	"github.com/nicolito128/deterministic-minesweeper-go/prng"
+	"github.com/nicolito128/minesweeper-go/prng"
 )
 
 type GameStatus uint8

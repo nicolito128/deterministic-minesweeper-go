@@ -33,5 +33,5 @@ func init() {
 	rootCmd.Flags().StringP("actions", "a", "", "List of interactions with the current game")
 	rootCmd.Flags().Int("width", 9, "Width of the board")
 	rootCmd.Flags().Int("height", 9, "Height of the board")
-	rootCmd.Flags().IntP("mines", "n", 10, "Total amount of mines for the game")
+	rootCmd.Flags().IntP("mines", "m", 10, "Total amount of mines for the game")
 }
