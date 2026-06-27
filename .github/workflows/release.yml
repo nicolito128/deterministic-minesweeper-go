@@ -38,7 +38,7 @@ jobs:
           make build ARCH=${{ matrix.goos }}-${{ matrix.goarch }}
           if [ "${{ matrix.goos }}" = "windows" ]; then
             mv bin/${{ matrix.goos }}/${{ matrix.goarch }}/minesweeper-cli bin/${{ matrix.goos }}/${{ matrix.goarch }}/minesweeper-cli.exe
-            mv bin/${{ matrix.goos }}/${{ matrix.goarch }}/minesweeper-cli.exe ./${{ matrix.matrix.artifact_name }}
+            mv bin/${{ matrix.goos }}/${{ matrix.goarch }}/minesweeper-cli.exe ./${{ matrix.artifact_name }}
           else
             mv bin/${{ matrix.goos }}/${{ matrix.goarch }}/minesweeper-cli ./${{ matrix.artifact_name }}
           fi
@@ -47,5 +47,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ matrix.artifact_name }}
+          overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
